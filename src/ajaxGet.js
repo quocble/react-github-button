@@ -1,17 +1,11 @@
-export default function ajaxGet(url, callback) {
-  if (typeof XDomainRequest !== 'undefined') {
-    callback(null);
-    return null;
-  }
+var githubButtonJsonCBFunc = null;
+window.githubButtonJsonCB = function(res) {
+  githubButtonJsonCBFunc && githubButtonJsonCBFunc(res.data);
+};
 
-  const xhr = new XMLHttpRequest();
-  xhr.onreadystatechange = () => {
-    if (xhr.readyState === XMLHttpRequest.DONE &&
-        xhr.status === 200) {
-      callback(JSON.parse(xhr.responseText));
-    }
-  };
-  xhr.open('GET', url, true);
-  xhr.send();
-  return xhr;
+export default function ajaxGet(url, callback) {
+  githubButtonJsonCBFunc = callback;
+  var script = document.createElement('script');
+  script.src = url + '?callback=githubButtonJsonCB';
+  document.getElementsByTagName('head')[0].appendChild(script);
 }
